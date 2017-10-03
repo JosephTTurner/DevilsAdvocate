@@ -1,0 +1,19 @@
+{
+  "name": "",
+  "version": "0.0.0",
+  "description": "",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "main": "gulpfile.js",
+  "scripts": {
+    "start": "gulp"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-eslint": "^4.0.0",
+    "gulp-plumber": "^1.1.0",
+    "gulp-sketch": "^1.0.5"
+  }
+}
