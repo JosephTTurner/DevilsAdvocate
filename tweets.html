@@ -1,6 +1,0 @@
-function onLoadMessages() {
-    var url = "http://twitter.com";
-    var server = new XMLHttpRequest();
-    server.onload = function() {
-      var messages = JSON.parse(server.responseText);
-      document.getElementById("messages").innerHTML = "";
