@@ -1,0 +1,21 @@
+{
+	"manifest_version": 2,
+
+	"name": "LinkTree",
+	"description": "A Tree Of Links!",
+	"version": "1",
+
+	"content_scripts":[
+		{
+			"matches":[
+				"http://*/*",
+				"https://*/*"
+			],
+			"js": [
+				"jquery-3.2.1.min.js",
+				"parse.js"
+			],
+			"run_at": "document_end"
+		}
+	]
+}
