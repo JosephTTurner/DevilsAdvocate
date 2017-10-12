@@ -19,25 +19,27 @@
 
 	$.ajax({
 		type : "POST",
-		url : "http://localhost:5000/hello",
+		url : "http://localhost:5000/get_sub_links",
 		data : arrJSON,
 		contentType : 'application/json;charset=UTF-8',
 		crossDomain: true,
 		success : function(result){ 
 			result = $.parseJSON(result);
-			for(dataLink in result){
-
-					var hoverString = "";
-					for (var i = 0; i < result[dataLink].length; i++){
-						hoverString += result[dataLink][i] + "\n";
-					}
-
-					$('a[href="'+dataLink+'"]').attr('title', hoverString);
-					console.log("I did a thing.");
-					console.log(dataLink);	
-					console.log(result[dataLink]);
-			}
+			showSubLinksOnHover(result);
 		}
 	});	
+
+
+	function showSubLinksOnHover(result){
+		for(dataLink in result){
+
+			var hoverString = "";
+			for (var i = 0; i < result[dataLink].length; i++){
+				hoverString += result[dataLink][i] + "\n";
+			}
+
+			$('a[href="'+dataLink+'"]').attr('title', hoverString);
+		}
+	}
 	
 })(jQuery);

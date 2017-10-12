@@ -1,20 +1,17 @@
-from flask import Flask, request, url_for, redirect # Allow client - server interactions
-from flask_cors import CORS, cross_origin # Addition flask functionality
-from bs4 import BeautifulSoup # Make sense of / parse html files
-import json # string based data structures
-import urllib.request # open remote links
-import urllib.error # catch possible errors when we open remote links
-import re # handle / compile regular expressions
+from flask import Flask, request, url_for, redirect
+from flask_cors import CORS, cross_origin
+from bs4 import BeautifulSoup
+import json
+import urllib.request 
+import urllib.error
+import re
 
-# Flask set up
 app = Flask(__name__)
 CORS(app, support_credentials=True)
 
-# Define route to local host
 @app.route("/get_sub_links", methods=['GET', 'POST'])
 @cross_origin(support_credentials=True)
-def get_sub_links():
-	# 
+def hello():
 
 	json_list_of_links = request.get_json()
 
