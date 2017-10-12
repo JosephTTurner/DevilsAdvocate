@@ -2,12 +2,20 @@
 	"manifest_version": 2,
 
 	"name": "Text Changer",
-	"description": "It changes Text",
+	"description": "It changes text",
 	"version": "1.2.3.4",
 
-	"browser_action": {
-		"default_icon": "icon.png",
-		"default_popup": "popup.html"
-	},
-	"permissions":["activeTab"]
+	"content_scripts": [
+		{
+			"matches": [
+				"http://*/*",
+				"https://*/*"
+			],
+			"js": ["textChange.js"],
+			"css": [
+				"textChange.css"
+			],
+			"run_at": "document_end"
+		}		
+	]
 }
