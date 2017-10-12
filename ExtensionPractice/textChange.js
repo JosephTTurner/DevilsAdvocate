@@ -1,13 +1,6 @@
-document.addEventListener('DOMContentLoaded', function(){
-	var changeButton = document.getElementById('changeText');
-	changeButton.addEventListener('click', function(){
-		chrome.tabs.getSelected(null, function(tab){
-			doc = document;
-			console.log("Found the Document");
-			elements = doc.getElementsByTagName('p');
+
+			elements = document.getElementsByTagName('p');
+			otherElements = document.getElementsByTagName('span');
 			for(x = 0; x < elements.length; x++){
-				console.log(elements[x]);
+				elements[x].style.setProperty('color', 'red', 'important');
 			}
-		})
-	})
-})
