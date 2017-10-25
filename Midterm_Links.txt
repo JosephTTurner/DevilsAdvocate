@@ -1,0 +1,14 @@
+List of links, as a csv file. Also has other useful information
+http://www.politifact.com/punditfact/article/2017/apr/20/politifacts-guide-fake-news-websites-and-what-they/
+
+More sites, not csv.
+https://www.snopes.com/2016/01/14/fake-news-sites/
+
+Also not csv, still useful
+http://www.factcheck.org/2017/07/websites-post-fake-satirical-stories/
+
+Python package for performing whois operations. We can't do too many all at once, but we can check the base site. This is important because it allows us to check WHERE a site has been registered from.
+https://pypi.python.org/pypi/ipwhois
+
+The opensources website, long list of sites
+http://www.opensources.co/
