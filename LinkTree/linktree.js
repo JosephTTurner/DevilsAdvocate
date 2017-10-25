@@ -13,9 +13,14 @@
 		console.log(arr[i]); 	
 	}
 
+	// convert to JSON array
+	// readable data for python server
 	var arrJSON = JSON.stringify(arr);
 
-	// Talk to server
+	/*
+		Connect to a server that pulls the html from the links 
+		and parses out the sublinks
+	*/
 
 	$.ajax({
 		type : "POST",
@@ -23,22 +28,32 @@
 		data : arrJSON,
 		contentType : 'application/json;charset=UTF-8',
 		crossDomain: true,
-		success : function(result){ 
+		success : function(result){ // success code: 200
+			// result = link data
 			result = $.parseJSON(result);
 			showSubLinksOnHover(result);
 		}
 	});	
 
+	/*
+		Break up the sublinks into a readable string 
+		that comes up when you hover over a link
 
+		result = link data
+	*/
 	function showSubLinksOnHover(result){
 		for(dataLink in result){
 
+			// make a readable string from the sublinks in the data
 			var hoverString = "";
 			for (var i = 0; i < result[dataLink].length; i++){
 				hoverString += result[dataLink][i] + "\n";
 			}
 
+			// replace the title of the href with the original link
+			// with the readable list of sublinks
 			$('a[href="'+dataLink+'"]').attr('title', hoverString);
+			// sublinks will now appear when you hover over a link.
 		}
 	}
 	

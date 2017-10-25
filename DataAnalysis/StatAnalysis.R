@@ -41,3 +41,20 @@ summary(lmModel)
 plot(lmModel)
 
 model = glmnet(x=modelData, y=fake, family="binomial")
+
+
+### Break Up List of Links ###
+OpenSources = read_csv("OpenSources.csv")
+
+biaseSources = subset(OpenSources, type == "bias" 
+                      | `2nd type` == "bias" 
+                      | `3rd type` == "bias")
+biaseSources = biasedSources[,1:4]
+
+conspiracySources = subset(OpenSources, type == "conspiracy" 
+                           | `2nd type` == "conspiracy" 
+                           | `3rd type` == "conspiracy" )
+
+unreliableSources = subset(OpenSources, type == "unreliable" 
+                           | `2nd type` == "unreliable" 
+                           | `3rd type` == "unreliable" )
