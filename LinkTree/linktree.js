@@ -30,6 +30,7 @@
 		crossDomain: true,
 		success : function(result){ // success code: 200
 			// result = link data
+			console.log(result);
 			result = $.parseJSON(result);
 			showSubLinksOnHover(result);
 		}

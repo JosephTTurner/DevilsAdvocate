@@ -7,6 +7,7 @@ import urllib.error # catch possible errors when we open remote links
 import re # handle / compile regular expressions
 import csv # work with csv files
 import urllib.parse
+from pprint import pprint
 
 
 # Flask set up
@@ -28,13 +29,15 @@ def get_sub_links():
 	# debugging purposes
 	print(json_list_of_links)
 
-	with open('OpenSources.csv', 'r') as csvfile:
+	with open('BadSources.csv', 'r') as csvfile:
 		source_reader = csv.reader(csvfile, delimiter=' ', quotechar='|')
-		source_list = list(source_reader)
+		source_list = []
+		for line in source_reader:
+			source_list.append(line)
 
-	print (source_list[1][0].split(","))
-
-	# initialize JSON data
+	print(source_list)
+	for thing in source_list:
+		print(thing[0].split(",")[0])
 	return_links = {}
 
 	for link in json_list_of_links:
