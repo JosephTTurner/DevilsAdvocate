@@ -46,9 +46,12 @@
 		for(dataLink in result){
 
 			// make a readable string from the sublinks in the data
-			var hoverString = "";
-			for (var i = 0; i < result[dataLink].length; i++){
-				hoverString += result[dataLink][i] + "\n";
+			var hoverString = result[dataLink][0]+ "\n\n";
+			for (var i = 1; i < result[dataLink].length; i++){
+				for (var j = 0; j < result[dataLink][i].length; j++){
+					hoverString += result[dataLink][i][j] + "\n";
+				}
+				hoverString += "\n";
 			}
 
 			// replace the title of the href with the original link

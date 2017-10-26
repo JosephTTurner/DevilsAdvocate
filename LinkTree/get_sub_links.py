@@ -38,6 +38,7 @@ def get_sub_links():
 	print(source_list)
 	for thing in source_list:
 		print(thing[0].split(",")[0])
+		
 	return_links = {}
 
 	for link in json_list_of_links:
@@ -45,14 +46,24 @@ def get_sub_links():
 		parsed_uri = urllib.parse.urlparse(link)
 		domain = '{uri.netloc}'.format(uri=parsed_uri)
 		print(domain)
-		print(link)	
 		domain_info = []
 		for badSource in source_list:
 			bSourceInfo = badSource[0].split(",")
 			re.compile(".*"+bSourceInfo[0])
 			if domain == bSourceInfo[0]:
-				domain_info = bSourceInfo
+				oSources = ["OpenSources: "]
+				pFact = ["Politifact: "]
+				domain_info = [domain, oSources, pFact]
+				for i in range(len(bSourceInfo)):
+					print(bSourceInfo[i])
+					if i > 0:
+						if (i < 4) & (bSourceInfo[i] != ""):
+							oSources.append(bSourceInfo[i])
+						elif bSourceInfo[i] != "":
+							pFact.append(bSourceInfo[i])
+				print(domain_info)
 				break
+
 		return_links[link] = domain_info
 
 
