@@ -1,8 +1,8 @@
 {
 	"manifest_version": 2,
 
-	"name": "LinkTree",
-	"description": "A Tree Of Links!",
+	"name": "LinkAnalyzer",
+	"description": "Check your sources!",
 	"version": "1",
 
 	"content_scripts":[
@@ -13,7 +13,7 @@
 			],
 			"js": [
 				"jquery-3.2.1.min.js",
-				"linktree.js"
+				"link_analyzer.js"
 			],
 			"run_at": "document_end"
 		}

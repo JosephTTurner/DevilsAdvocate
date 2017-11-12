@@ -18,13 +18,12 @@
 	var arrJSON = JSON.stringify(arr);
 
 	/*
-		Connect to a server that pulls the html from the links 
-		and parses out the sublinks
+		Connect to a server that applies information to known
+		sources that appear on the webpage.
 	*/
-
 	$.ajax({
 		type : "POST",
-		url : "http://localhost:5000/get_sub_links",
+		url : "http://localhost:5000/analyze_links",
 		data : arrJSON,
 		contentType : 'application/json;charset=UTF-8',
 		crossDomain: true,
@@ -32,19 +31,17 @@
 			// result = link data
 			console.log(result);
 			result = $.parseJSON(result);
-			showSubLinksOnHover(result);
+			showLinkInfoOnHover(result);
 		}
 	});	
 
 	/*
-		Break up the sublinks into a readable string 
-		that comes up when you hover over a link
-
-		result = link data
+	*	Break up the returned info into a readable substring.
+	*
+	*	@param result = link data
 	*/
-	function showSubLinksOnHover(result){
+	function showLinkInfoOnHover(result){
 		for(dataLink in result){
-
 			// make a readable string from the sublinks in the data
 			var hoverString = result[dataLink][0]+ "\n\n";
 			for (var i = 1; i < result[dataLink].length; i++){
@@ -53,11 +50,9 @@
 				}
 				hoverString += "\n";
 			}
-
-			// replace the title of the href with the original link
-			// with the readable list of sublinks
+			// replace the title of the href with the info associated with the link
 			$('a[href="'+dataLink+'"]').attr('title', hoverString);
-			// sublinks will now appear when you hover over a link.
+			// info will now appear when you hover over a link.
 		}
 	}
 	

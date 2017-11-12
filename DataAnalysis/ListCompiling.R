@@ -53,8 +53,8 @@ colnames(compressedList) = colnames(compiledList)
 
 write.csv(x = compressedList, file = "BadSources.csv", row.names = FALSE, quote = FALSE, na = "")
 
-install.packages("jsonlite")
-library("jsonlite")
-BadSources <- toJSON(compressedList)
-cat(BadSources)
-write_json(BadSources, path = "BadSources.json")
+# install.packages("jsonlite")
+# library("jsonlite")
+# BadSources <- toJSON(compressedList)
+# cat(BadSources)
+# write_json(BadSources, path = "BadSources.json")

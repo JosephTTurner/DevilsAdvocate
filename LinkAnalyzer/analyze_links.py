@@ -17,9 +17,9 @@ app = Flask(__name__)
 CORS(app, support_credentials=True)
 
 # Define route to local host
-@app.route("/get_sub_links", methods=['POST'])
+@app.route("/analyze_links", methods=['POST'])
 @cross_origin(support_credentials=True)
-def get_sub_links():
+def analyze_links():
 
 
 	json_list_of_links = request.get_json()
@@ -29,18 +29,21 @@ def get_sub_links():
 	# debugging purposes
 	print(json_list_of_links)
 
+	# Load CSV
 	with open('BadSources.csv', 'r') as csvfile:
-		source_reader = csv.reader(csvfile, delimiter=' ', quotechar='|')
+		source_reader = csv.reader(csvfile, delimiter='\n', quotechar='|')
 		source_list = []
 		for line in source_reader:
 			source_list.append(line)
 
-	print(source_list)
-	for thing in source_list:
-		print(thing[0].split(",")[0])
+	# debugging
+	# print(source_list)
+	# for thing in source_list:
+	# 	print(thing[0].split(",")[0])
 		
-	return_links = {}
+	return_data = {}
 
+	# Connect links to source info if applicable
 	for link in json_list_of_links:
 		print(link)	
 		parsed_uri = urllib.parse.urlparse(link)
@@ -52,7 +55,7 @@ def get_sub_links():
 			re.compile(".*"+bSourceInfo[0])
 			if domain == bSourceInfo[0]:
 				oSources = ["OpenSources: "]
-				pFact = ["Politifact: "]
+				pFact = ["PolitiFact: "]
 				domain_info = [domain, oSources, pFact]
 				for i in range(len(bSourceInfo)):
 					print(bSourceInfo[i])
@@ -64,7 +67,7 @@ def get_sub_links():
 				print(domain_info)
 				break
 
-		return_links[link] = domain_info
+		return_data[link] = domain_info
 
 
 	# for link in json_list_of_links:
@@ -93,7 +96,7 @@ def get_sub_links():
 	# to display those tags 
 
 
-	return json.dumps(return_links)
+	return json.dumps(return_data)
 
 if __name__ == "__main__":
     app.run()
