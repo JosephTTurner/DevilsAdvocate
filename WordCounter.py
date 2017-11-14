@@ -12,7 +12,6 @@ for word in text:
     #and making all of the words lowercase
     word = re.sub(r'\W+', '', word)
     word = word.lower()
-    #word = word.replace(',','').replace('.','').replace('"','').replace('(','').replace(')', '').replace('-','')
     if (word not in stopwords.words('english')): #Don't include stopwords
         if word not in dictionary: #check to see if the word has been added to the dictionary
             dictionary[word] = 1
