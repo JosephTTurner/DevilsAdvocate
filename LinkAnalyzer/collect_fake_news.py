@@ -9,6 +9,7 @@ import csv # work with csv files
 import urllib.parse
 # from pprint import pprint
 import newspaper
+from newspaper import Article
 import threading
 from threading import Thread
 from threading import Semaphore
@@ -55,13 +56,17 @@ def collect_fake_news():
 	conspiracy = re.compile('.*[cC][oO][nN][sS][pP][iI][rR][aA][cC][yY].*')
 	rumor = re.compile('.*[rR][uU][mM][eE][rR].*')
 	parody = re.compile('.*[pP][aA][rR][oO][dD][yY].*')
+	junksci = re.compile('.*[jJ][uU][nN][kK][sS][cC][iI].*')
+	clickbait = re.compile('.*[cC][lL][iI][cC][kK][bB][aA][iI][tT].*')
+	hate = re.compile('.*[hH][aA][tT][eE].*')
+	political = re.compile('.*[pP][oO][lL][iI][tT][iI][cC][aA][lL].*')
 
 	escape_chars = re.compile('/[\n\\\-\_\t\(\)\,]/')
 
 	cachedStopWords = stopwords.words("english")
 
 	# Load CSV
-	with open('BadSources.csv', 'r', encoding="utf-8") as csvfile:
+	with open('BadSources_Clean.csv', 'r', encoding="ISO-8859-1") as csvfile:
 		source_reader = csv.reader(csvfile, delimiter='\n', quotechar='|')		
 		for line in source_reader:
 			if line[0].split(",")[0] != "site_name":
@@ -71,8 +76,8 @@ def collect_fake_news():
 	# WITH THE AMOUNT OF ARTICLES WE ARE PULLING WE COULD JUST 
 	# FOCUS ON SOURCES TAGGED AS "FAKE"
 
-	out = open("Articles_Data_Full.csv", "w+", encoding="utf-8")
-	out.write("source,url,title,text,fake,bias,imposter,satire,unreliable,reliable,conspiracy,parody,rumor\n")
+	out = open("Articles_Data_Clean_English_Full.csv", "w+", encoding="ISO-8859-1")
+	out.write("source,url,title,text,fake,bias,imposter,satire,unreliable,reliable,conspiracy,parody,rumor,junksci,clickbait,hate,political\n")
 
 
 	def build_papers(start, end, sources, articles_to_parse):
@@ -94,18 +99,30 @@ def collect_fake_news():
 
 				if paper.size() > 10:
 
-				# 	for j in range(10):
-				# 		article = paper.articles[random.randrange(paper.size() - 1)]
-				# 		if [article, i] in articles_to_parse:
-				# 			continue
-				# 		else:
-				# 			with articles_lock:
-				# 				articles_to_parse.append([article, i])
-				# 			appended += 1
-				# else:
+					while appended < 10:
+						article = paper.articles[random.randrange(paper.size() - 1)]
+						a = Article(article.url, language = 'en')
+
+						if a is None:
+							continue
+
+						if [a, i] in articles_to_parse:
+							continue
+
+						else:
+							with articles_lock:
+								articles_to_parse.append([a, i])
+							appended += 1
+				else:
+
 					for article in paper.articles:
+						a = Article(article.url, language = 'en')
+
+						if a is None:
+							continue
+						
 						with articles_lock:
-							articles_to_parse.append([article, i])
+							articles_to_parse.append([a, i])
 						appended += 1
 
 				for k in range(appended):
@@ -145,6 +162,7 @@ def collect_fake_news():
 				continue
 
 			article = article_entry[0]
+
 			source_index = article_entry[1]
 
 			article.download()
@@ -166,9 +184,9 @@ def collect_fake_news():
 				title = title.replace(",", " ")
 				title = title.replace(',', ' ')
 				title = title.replace("\"", "\'")
-				title = title.replace("\"", "\'")
 				title = title.replace("\n", " ")
-				title = ' '.join([word for word in title.split() if word not in cachedStopWords])
+				title = " ".join([re.sub(r'\W+', '', word) for word in title.split() if word not in cachedStopWords])
+				
 
 
 				text = article.text
@@ -176,7 +194,7 @@ def collect_fake_news():
 				text = text.replace(',', ' ')
 				text = text.replace("\"", "\'")
 				text = text.replace("\n", " ")
-				text = ' '.join([word for word in text.split() if word not in cachedStopWords])
+				text = " ".join([re.sub(r'\W+', '', word) for word in text.split() if word not in cachedStopWords])
 
 
 				row += ",\""+title+"\""
@@ -192,6 +210,10 @@ def collect_fake_news():
 				flagged_bias = False
 				flagged_parody = False
 				flagged_rumor = False
+				flagged_junksci = False
+				flagged_clickbait = False
+				flagged_hate = False
+				flagged_political = False
 
 				for data in source_list[source_index]:
 
@@ -213,6 +235,14 @@ def collect_fake_news():
 						flagged_parody = True
 					elif rumor.match(data):
 						flagged_rumor = True
+					elif junksci.match(data):
+						flagged_junksci = True
+					elif clickbait.match(data):
+						flagged_clickbait = True
+					elif hate.match(data):
+						flagged_hate = True
+					elif political.match(data):
+						flagged_political = True
 
 
 				if flagged_fake:
@@ -251,6 +281,22 @@ def collect_fake_news():
 					row += ',1'
 				else:
 					row += ',0'
+				if flagged_junksci:
+					row += ',1'
+				else:
+					row += ',0'
+				if flagged_clickbait:
+					row += ',1'
+				else:
+					row += ',0'
+				if flagged_hate:
+					row += ',1'
+				else:
+					row += ',0'
+				if flagged_political:
+					row += ',1'
+				else:
+					row += ',0'
 
 				row += "\n"
 
@@ -262,7 +308,7 @@ def collect_fake_news():
 
 
 
-	# known_sources = known_sources[100:200]
+	# known_sources = known_sources[100:125]
 	# nthreads = int(len(known_sources)/4);
 	nthreads = 20 # int(len(known_sources) / 4);
 
@@ -315,7 +361,7 @@ def collect_fake_news():
 
 	### output to data file ###
 
-	print('output data Articles_Data.csv...')
+	print('output data Articles_Data_Clean_English_Full.csv...')
 
 	out.close()
 	
