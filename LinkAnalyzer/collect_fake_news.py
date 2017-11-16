@@ -36,7 +36,11 @@ def collect_fake_news():
 	parse_threads = []
 
 	start_parsing = Semaphore()
+
+	added_articles = Event()
+	no_more_articles = Event()
 	build_threads_done = Event()
+
 	articles_lock = RLock()
 	write_lock = RLock()
 
@@ -61,6 +65,8 @@ def collect_fake_news():
 	hate = re.compile('.*[hH][aA][tT][eE].*')
 	political = re.compile('.*[pP][oO][lL][iI][tT][iI][cC][aA][lL].*')
 
+	single_letter = re.compile('[a-z]{1}')
+
 	escape_chars = re.compile('/[\n\\\-\_\t\(\)\,]/')
 
 	cachedStopWords = stopwords.words("english")
@@ -76,7 +82,7 @@ def collect_fake_news():
 	# WITH THE AMOUNT OF ARTICLES WE ARE PULLING WE COULD JUST 
 	# FOCUS ON SOURCES TAGGED AS "FAKE"
 
-	out = open("Articles_Data_Clean_English_Full.csv", "w+", encoding="ISO-8859-1")
+	out = open("Fake_News.csv", "w+", encoding="ISO-8859-1")
 	out.write("source,url,title,text,fake,bias,imposter,satire,unreliable,reliable,conspiracy,parody,rumor,junksci,clickbait,hate,political\n")
 
 
@@ -100,7 +106,7 @@ def collect_fake_news():
 				if paper.size() > 10:
 
 					while appended < 10:
-						article = paper.articles[random.randrange(paper.size() - 1)]
+						article = paper.articles[random.randrange(paper.size())]
 						a = Article(article.url, language = 'en')
 
 						if a is None:
@@ -112,7 +118,14 @@ def collect_fake_news():
 						else:
 							with articles_lock:
 								articles_to_parse.append([a, i])
-							appended += 1
+								appended += 1
+
+							if not added_articles.is_set():
+								added_articles.set()
+
+							start_parsing.release()
+
+							
 				else:
 
 					for article in paper.articles:
@@ -123,12 +136,15 @@ def collect_fake_news():
 						
 						with articles_lock:
 							articles_to_parse.append([a, i])
-						appended += 1
+							appended += 1
+							
+						if not added_articles.is_set():
+							added_articles.set()
 
-				for k in range(appended):
-					start_parsing.release()	
+						start_parsing.release()
+					
 
-			print('built ' + sources[i])
+			print('added ' + str(appended) + ' articles from ' + sources[i])
 
 
 	
@@ -150,13 +166,21 @@ def collect_fake_news():
 		print('launching parse thread')
 		while True:
 
+			added_articles.wait()
+
 			start_parsing.acquire()
 
-			if build_threads_done.is_set():
+			if no_more_articles.is_set():
 				break
 
+			article_entry = None
+
 			with articles_lock:
-				article_entry = articles_to_parse.pop(0)
+				if len(articles_to_parse) > 0:
+					article_entry = articles_to_parse.pop(0)
+				elif build_threads_done.is_set():
+					no_more_articles.set()
+
 
 			if article_entry is None:
 				continue
@@ -167,34 +191,26 @@ def collect_fake_news():
 
 			article.download()
 
+			print('DOWNLOADED: ' + article.url)
+
 			try:
 				article.parse()
 			except Exception as e:
 				pass
 			else:
-			
+				
+				print('PARSED: ' + article.url)
 				# parsed_uri = urllib.parse.urlparse(article.url)
 				# domain = '{uri.netloc}'.format(uri=parsed_uri)
 
 				row = source_list[source_index][0]
 				row += "," + article.url
 
-				title = article.title
-
-				title = title.replace(",", " ")
-				title = title.replace(',', ' ')
-				title = title.replace("\"", "\'")
-				title = title.replace("\n", " ")
-				title = " ".join([re.sub(r'\W+', '', word) for word in title.split() if word not in cachedStopWords])
+				title = article.title.lower()
+				title = " ".join([re.sub(r'\W+', '', word) for word in title.split() if word not in cachedStopWords if single_letter.match(word)])
 				
-
-
-				text = article.text
-				text = text.replace(",", " ")
-				text = text.replace(',', ' ')
-				text = text.replace("\"", "\'")
-				text = text.replace("\n", " ")
-				text = " ".join([re.sub(r'\W+', '', word) for word in text.split() if word not in cachedStopWords])
+				text = article.text.lower()
+				text = " ".join([re.sub(r'\W+', '', word) for word in text.split() if word not in cachedStopWords if single_letter.match(word)])
 
 
 				row += ",\""+title+"\""
@@ -301,9 +317,12 @@ def collect_fake_news():
 				row += "\n"
 
 				with write_lock:
-					out.write(row)
-
-				print('successfully downloaded and parsed ' + article.url)
+					try:
+						out.write(row)
+					except Exception as e:
+						pass
+					else:
+						print('WROTE: ' + article.url)
 
 
 
@@ -329,8 +348,10 @@ def collect_fake_news():
 
 	for i in range(nthreads):
 		build_threads[i].join()
-	
+
 	build_threads_done.set()
+	
+	
 	
 	# nthreads = int(len(articles_to_parse) / 4);
 
@@ -349,7 +370,7 @@ def collect_fake_news():
 
 	# print('parsing...')
 
-	for i in range(nthreads):
+	for i in range(nthreads*2):
 		start_parsing.release()
 
 	for i in range(nthreads):

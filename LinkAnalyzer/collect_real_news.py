@@ -45,8 +45,12 @@ def collect_real_news():
 	parse_threads = []
 
 	start_parsing = Semaphore()
+
+
 	added_articles = Event()
 	no_more_articles = Event()
+	build_threads_done = Event()
+
 	articles_lock = RLock()
 	write_lock = RLock()
 
@@ -69,6 +73,8 @@ def collect_real_news():
 
 	escape_chars = re.compile('/[\n\\\-\_\t\(\)\,]/')
 
+	single_letter = re.compile('[a-z]{1}')
+
 	cachedStopWords = stopwords.words("english")
 
 	# Load CSV
@@ -80,7 +86,7 @@ def collect_real_news():
 	# WITH THE AMOUNT OF ARTICLES WE ARE PULLING WE COULD JUST 
 	# FOCUS ON SOURCES TAGGED AS "FAKE"
 
-	out = open("Real_Articles_Data_Clean_English_Test3.csv", "w+", encoding="ISO-8859-1", errors="surrogateescape")
+	out = open("Real_Articles_Data_Clean_English_Test4.csv", "w+", encoding="ISO-8859-1", errors="surrogateescape")
 	out.write("source,url,title,text,fake,bias,imposter,satire,unreliable,reliable,conspiracy,parody,rumor,junksci,clickbait,hate,political\n")
 
 
@@ -102,9 +108,9 @@ def collect_real_news():
 				# num_papers += 1
 				print('built ' + sources[i])
 
-				if paper.size() > 50:
+				if paper.size() > 200:
 
-					while appended < 50:
+					while appended < 200:
 						article = paper.articles[random.randrange(paper.size())]
 						a = Article(article.url, language = 'en')
 
@@ -121,6 +127,7 @@ def collect_real_news():
 
 							if not added_articles.is_set():
 								added_articles.set()
+
 							start_parsing.release()
 
 							
@@ -138,6 +145,7 @@ def collect_real_news():
 							
 						if not added_articles.is_set():
 							added_articles.set()
+
 						start_parsing.release()
 						
 
@@ -182,7 +190,7 @@ def collect_real_news():
 			with articles_lock:
 				if len(articles_to_parse) > 0:
 					article_entry = articles_to_parse.pop(0)
-				else:
+				elif build_threads_done.is_set():
 					no_more_articles.set()
 
 
@@ -210,11 +218,11 @@ def collect_real_news():
 				row = known_sources[source_index]
 				row += "," + article.url
 
-				title = article.title
-				title = " ".join([re.sub(r'\W+', " ", word) for word in title.split() if word not in cachedStopWords])
-
-				text = article.text
-				text = " ".join([re.sub(r'\W+', " ", word) for word in text.split() if word not in cachedStopWords])
+				title = article.title.lower()
+				title = " ".join([re.sub(r'\W+', '', word) for word in title.split() if word not in cachedStopWords if single_letter.match(word)])
+				
+				text = article.text.lower()
+				text = " ".join([re.sub(r'\W+', '', word) for word in text.split() if word not in cachedStopWords if single_letter.match(word)])
 
 
 				row += ","+title
@@ -297,6 +305,8 @@ def collect_real_news():
 
 	for i in range(nthreads):
 		build_threads[i].join()
+
+	build_threads_done.set()
 	
 	# nthreads = int(len(articles_to_parse) / 4);
 
@@ -315,7 +325,7 @@ def collect_real_news():
 
 	# print('parsing...')
 
-	for i in range(nthreads):
+	for i in range(len(parse_threads)*2):
 		start_parsing.release()
 
 	for i in range(len(parse_threads)):
