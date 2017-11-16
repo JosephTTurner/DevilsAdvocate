@@ -17,11 +17,11 @@ for entry in articleData:
         #and making all of the words lowercase
         #word = re.sub(r'\W+', '', word)
         word = word.lower()
-        #if (word not in stopwords.words('english')): #Don't include stopwords
-        if word not in dictionary: #check to see if the word has been added to the dictionary
-            dictionary[word] = 1
-        else:
-            dictionary[word] = dictionary[word] + 1
+        if (word not in stopwords.words('english')): #Don't include stopwords
+            if word not in dictionary: #check to see if the word has been added to the dictionary
+                dictionary[word] = 1
+            else:
+                dictionary[word] = dictionary[word] + 1
 
 sort = sorted(dictionary.items(), key = lambda x:x[1], reverse = True)
 print ('{:20}{:3}'.format('Word', 'Frequency'))
