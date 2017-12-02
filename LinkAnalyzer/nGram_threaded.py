@@ -61,7 +61,7 @@ def get_grams(articleData, dictionary):
                     dictionary[phrase] = dictionary[phrase] + 1
 
 # launch threads
-for i in range(NUM_THREADS):
+for i in range(NUM_THREADS): 
     t = Thread(target=get_grams, args=(articleData, dictionary))
     threads.append(t)
     t.start()
