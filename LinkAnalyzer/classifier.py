@@ -1,4 +1,4 @@
-import nltk.corpus import word_tokenize
+import nltk.corpus
 import csv
 featuresets = []
 
@@ -6,11 +6,11 @@ featuresets = []
 with open('./Fake_News.csv') as csvfile:
     reader = csv.DictReader(csvfile)
     for row in reader:
-        featuresets.append((nltk.word_tokenize(row['text']), 'Fake'))
+        featuresets.append(row['text'])
 with open('./Real_Articles_Data_Clean_English_Test4.csv') as csvfile:
     reader = csv.DictReader(csvfile)
     for row in reader:
-        featuresets.append((nltk.word_tokenize(row['text']), 'Real'))
+        featuresets.append(row['text'])
 #articleData = ([(articleText, 'fake') for articleText in .words('Fake.txt')] + [(articleText, 'real') for articleText in articleText.words('real.txt')])
 import random
 random.shuffle(featuresets)
@@ -21,4 +21,5 @@ print ('Made Data Sets')
 classifier = nltk.NaiveBayesClassifier.train(train_set)
 print('Made classifier')
 classifier.classify(article_features('exampleArticle.txt'))
+
 print(nltk.classify.accuracy(classifier, test_set))
