@@ -1,25 +1,39 @@
+
 import nltk.corpus
+from nltk.tokenize import word_tokenize
 import csv
 featuresets = []
 
 
 with open('./Fake_News.csv') as csvfile:
-    reader = csv.DictReader(csvfile)
-    for row in reader:
-        featuresets.append(row['text'])
+	reader = csv.DictReader(csvfile)
+	for row in reader:
+		articleWords = nltk.word_tokenize(row['text'])
+		for word in articleWords:
+			addSet = [{'word': word}, 'False']
+			featuresets.append(addSet)
 with open('./Real_News.csv') as csvfile:
-    reader = csv.DictReader(csvfile)
-    for row in reader:
-        featuresets.append(row['text'])
-#articleData = ([(articleText, 'fake') for articleText in .words('Fake.txt')] + [(articleText, 'real') for articleText in articleText.words('real.txt')])
+	reader = csv.DictReader(csvfile)
+	for row in reader:
+		articleWords = nltk.word_tokenize(row['text'])
+		for word in articleWords:
+			addSet = [{'word': word}, 'True']
+			featuresets.append(addSet)
 import random
 random.shuffle(featuresets)
-
-#featuresets = [(articleText, validity) for (n, validity) in articleData]
-train_set, test_set = featuresets[4430:], featuresets[:4430]
+print (len(featuresets))
+train_set, test_set = featuresets[1258252:], featuresets[:1258253]
 print ('Made Data Sets')
 classifier = nltk.NaiveBayesClassifier.train(train_set)
 print('Made classifier')
-classifier.classify(article_features('exampleArticle.txt'))
+testFile = {}
+# with open('exampleArticle.txt') as file:
+# 	for line in file:
+# 		articleWords = nltk.word_tokenize(line)
+# 		for word in articleWords:
+# 			addSet = [{'word': word}, 'False']
+# 			testFile.update(addSet)
+
+# classifier.classify(testFile)
 
 print(nltk.classify.accuracy(classifier, test_set))
