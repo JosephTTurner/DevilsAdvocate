@@ -50,6 +50,7 @@ def collect_fake_news():
 	articles_to_parse = []
 	source_data = []
 	source_list = []
+	already_added = []
 
 	fake = re.compile('.*[fF][aA][kK][eE].*')
 	bias = re.compile('.*[bB][iI][aA][sS].*')
@@ -203,18 +204,23 @@ def collect_fake_news():
 				# parsed_uri = urllib.parse.urlparse(article.url)
 				# domain = '{uri.netloc}'.format(uri=parsed_uri)
 
-				row = source_list[source_index][0]
+				row = known_sources[source_index]
 				row += "," + article.url
+				
+				text = article.text.lower()
+				
+				if text in already_added:
+					continue;
+				else:
+					already_added.append(text)
+
+				text = " ".join([re.sub(r'\W+', '', word) for word in text.split() if word not in cachedStopWords if single_letter.match(word)])
 
 				title = article.title.lower()
 				title = " ".join([re.sub(r'\W+', '', word) for word in title.split() if word not in cachedStopWords if single_letter.match(word)])
-				
-				text = article.text.lower()
-				text = " ".join([re.sub(r'\W+', '', word) for word in text.split() if word not in cachedStopWords if single_letter.match(word)])
 
-
-				row += ",\""+title+"\""
-				row += ",\""+text+"\""
+				row += ","+title
+				row += ","+text
 
 				isfake = False
 				flagged_fake = False

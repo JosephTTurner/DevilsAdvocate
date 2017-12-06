@@ -43,14 +43,12 @@ def collect_real_news():
 	build_threads = []
 	download_threads =[]
 	parse_threads = []
+	already_added = []
 
 	start_parsing = Semaphore()
-
-
 	added_articles = Event()
 	no_more_articles = Event()
 	build_threads_done = Event()
-
 	articles_lock = RLock()
 	write_lock = RLock()
 
@@ -86,7 +84,7 @@ def collect_real_news():
 	# WITH THE AMOUNT OF ARTICLES WE ARE PULLING WE COULD JUST 
 	# FOCUS ON SOURCES TAGGED AS "FAKE"
 
-	out = open("Real_Articles_Data_Clean_English_Test4.csv", "w+", encoding="ISO-8859-1", errors="surrogateescape")
+	out = open("Real_News.csv", "w+", encoding="ISO-8859-1", errors="surrogateescape")
 	out.write("source,url,title,text,fake,bias,imposter,satire,unreliable,reliable,conspiracy,parody,rumor,junksci,clickbait,hate,political\n")
 
 
@@ -217,13 +215,18 @@ def collect_real_news():
 
 				row = known_sources[source_index]
 				row += "," + article.url
+				
+				text = article.text.lower()
+
+				if text in already_added:
+					continue;
+				else:
+					already_added.append(text)
+
+				text = " ".join([re.sub(r'\W+', '', word) for word in text.split() if word not in cachedStopWords if single_letter.match(word)])
 
 				title = article.title.lower()
 				title = " ".join([re.sub(r'\W+', '', word) for word in title.split() if word not in cachedStopWords if single_letter.match(word)])
-				
-				text = article.text.lower()
-				text = " ".join([re.sub(r'\W+', '', word) for word in text.split() if word not in cachedStopWords if single_letter.match(word)])
-
 
 				row += ","+title
 				row += ","+text

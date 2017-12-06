@@ -7,7 +7,7 @@ with open('./Fake_News.csv') as csvfile:
     reader = csv.DictReader(csvfile)
     for row in reader:
         featuresets.append(row['text'])
-with open('./Real_Articles_Data_Clean_English_Test4.csv') as csvfile:
+with open('./Real_News.csv') as csvfile:
     reader = csv.DictReader(csvfile)
     for row in reader:
         featuresets.append(row['text'])
