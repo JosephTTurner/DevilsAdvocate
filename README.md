@@ -28,7 +28,7 @@ It also requires the Fake_News.csv and Real_News.csv to be present in the same d
 
 # Chrome Extension Installation
 The chrome extension requires that the manifest.json, link_analyzer.js, and jquery-3.2.1.min.js files are present in the folder you use to install as the extension.
-The manifest file should automatically ull the appropriate js files into the extension.
+The manifest file should automatically pull the appropriate js files into the extension.
 
 # Demo
 The Classifier can be tested by running the command "python classifier.py" on a python capable command prompt.
