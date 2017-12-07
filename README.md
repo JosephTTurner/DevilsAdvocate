@@ -19,4 +19,9 @@ Analyze Links will need a json list of the hrefs in the parent page, this can be
 
 get_who_is requires a query parameter that is the url of the page you want whois information on. This is formatted as http://localhost:8080/get_who_is?checkURL=[your website here]
 
-#
+
+# Classifier.py
+Classifier runs and then tests the accuracy of a classifier created using ScikitLearn and NLTK. It is currently using the Bernoulli Naive Bayesian Network, and is 60.48% accurate on our data.
+Classifier is run with the command "python classifier.py"
+It requires NLTK and ScikitLearn to be installed.
+It also requires the Fake_News.csv and Real_News.csv to be present in the same directory as classifier.py.
