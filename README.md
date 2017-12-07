@@ -26,6 +26,11 @@ Classifier is run with the command "python classifier.py"
 It requires NLTK and ScikitLearn to be installed.
 It also requires the Fake_News.csv and Real_News.csv to be present in the same directory as classifier.py.
 
-#Chrome Extension Installation
-The chrome extension requires that the manifest.json and link_analyzer.js are present in the folder you use to install as the extension.
+# Chrome Extension Installation
+The chrome extension requires that the manifest.json, link_analyzer.js, and jquery-3.2.1.min.js files are present in the folder you use to install as the extension.
 The manifest file should automatically ull the appropriate js files into the extension.
+
+# Demo
+The Classifier can be tested by running the command "python classifier.py" on a python capable command prompt.
+The Chrome Extension once installed will attempt to query the python server.py with API calls. For this to work the command "python server.py" must be run in a python capable command prompt. After this you should see a message saying that the server is running on localhost:8080. From there the Chrome extension should work when installed.
+The Whois endpoint must currently be tested by actually calling it yourself. Its format is http://localhost:8080/get_who_is?checkURL=redcountry.us This for example pulls the whois information for redcountry.us, a conservative fake news site.
