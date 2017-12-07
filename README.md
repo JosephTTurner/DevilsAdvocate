@@ -25,3 +25,7 @@ Classifier runs and then tests the accuracy of a classifier created using Scikit
 Classifier is run with the command "python classifier.py"
 It requires NLTK and ScikitLearn to be installed.
 It also requires the Fake_News.csv and Real_News.csv to be present in the same directory as classifier.py.
+
+#Chrome Extension Installation
+The chrome extension requires that the manifest.json and link_analyzer.js are present in the folder you use to install as the extension.
+The manifest file should automatically ull the appropriate js files into the extension.
