@@ -1,5 +1,5 @@
 # DevilsAdvocate
-Fact Checking Chrome Extension: implements social media API's (Twitter) and HTML parsing
+Fact Checking Chrome Extension: HTML parsing
 
 HTML5 and my-chrome-extension starter is borrowed code from existing github projects
 
